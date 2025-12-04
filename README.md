@@ -2,7 +2,7 @@
 
 ## About us
 
-We are a group of like-minded churches aiming to fill southern Minnesota with healthy churches over the next 100 years. Find out more at http://smntct.org
+We are a group of like-minded churches aiming to fill southern Minnesota with healthy churches over the next 100 years. Find out more at https://prairieforge.org/
 
 ## About this site
 
