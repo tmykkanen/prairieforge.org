@@ -5,6 +5,8 @@ import { Resend } from "resend";
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
+const users = import.meta.env.RESEND_USERS;
+
 export const POST: APIRoute = async ({ request }) => {
 	const event = await request.json();
 
@@ -13,12 +15,16 @@ export const POST: APIRoute = async ({ request }) => {
 			event.data.email_id,
 		);
 
-		console.log("EVENT:", event);
-		console.log("FROM", email?.from);
+		if (!users.includes(email?.from)) {
+			return new Response(null, {
+				status: 403,
+				statusText: "Not an authorized user!",
+			});
+		}
 
 		const { data: broadcastID } = await resend.broadcasts.create({
-			segmentId: "d1c96805-55c7-48e4-a02a-806ebd131ca0",
-			from: "Prairie Forge <updates@updates.prairieforge.org>",
+			segmentId: import.meta.env.RESEND_SEGMENT_KEY,
+			from: import.meta.env.RESEND_FROM,
 			subject: event.data.subject,
 			html: `${email?.html} <p>Want to stop receiving these emails? <a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Click here to unsubscribe from this list.</a></p> `,
 			replyTo: email?.from,
@@ -28,11 +34,6 @@ export const POST: APIRoute = async ({ request }) => {
 		if (!broadcastID) return new Response(null, { status: 400 });
 
 		await resend.broadcasts.send(broadcastID.id);
-
-		console.log("broadcastID", broadcastID);
-		console.log(email?.html);
-		console.log(email?.text);
-		console.log(email?.headers);
 
 		return new Response(null, { status: 200 });
 	}
